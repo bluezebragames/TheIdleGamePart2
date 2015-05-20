@@ -19,10 +19,12 @@ Game.launch = function(){
 Game.draw = function(){
 	tempimage = new Image();
 	tempimage.onload = function(){
-		Game.context.drawImage(tempimage, 0,0,Game.canvas.width,Game.canvas.height);
+		canvas.width = tempimage.width;
+		canvas.height = tempimage.height;
+
+		Game.context.drawImage(tempimage, 0,0);
 	}
-	tempimage.src = "img/cover.png";
-	//tempimage.src = "https://mdn.mozillademos.org/files/5395/backdrop.png"
+	tempimage.src = "img/cover2.png";
 }
 
 window.onload = function(){
