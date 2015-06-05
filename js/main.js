@@ -35,6 +35,9 @@ Game.Launch = function() {
     Game.buildings = [];
     Game.buildings.push(new Building(10,0.1));
     Game.buildings.push(new Building(10000,500));
+
+    Game.playerName = prompt("Name: ");
+    document.getElementById("greeting").innerHTML = "Hello, " + Game.playerName + "!";
     //Game.tooltip(Game.buildings[0].tooltip());
     if (localStorage.getItem("game"))
     {
