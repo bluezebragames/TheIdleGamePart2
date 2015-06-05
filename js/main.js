@@ -1,5 +1,14 @@
-var Building = function(price,wpsgain,howmany,called){
-    this.price=price;
+// beautify a number
+var fix = function(num)
+{
+    return Math.round(num);
+}
+
+
+
+var Building = function(bprice,wpsgain,howmany,called){
+    this.bprice=bprice;
+    this.price=bprice;
     this.wpsgain=wpsgain;
     this.howMany=howmany;
     this.called = called;
@@ -31,6 +40,7 @@ Game.Launch = function() {
     Game.words = 0;
     Game.wordsd = 0;
     Game.wordsAllTime = 0;
+    Game.priceScale = 1.15;
     Game.fps = 60;
     Game.buildings = [];
     Game.buildings.push(new Building(10,0.1));
@@ -71,13 +81,26 @@ Game.loadSave = function(file) {
     {
         Game.buildings[i].howMany = buildingCount[i];
     }
-    Game.recalculateWps();
+    Game.recalculate();
 }
 
 // add things when you click!
 Game.click = function() {
     Game.words++;
     Game.wordsAllTime++;
+}
+
+Game.recalculate = function(){
+    Game.recalculatePrice();
+    Game.recalculateWps();
+}
+
+// when you buy a building, cost increases
+Game.recalculatePrice = function() {
+    for(b in Game.buildings)
+    {
+        Game.buildings[b].price = Game.buildings[b].bprice * Math.pow(Game.priceScale, Game.buildings[b].howMany);
+    }
 }
 
 // how about this recalculates the wps
@@ -95,7 +118,7 @@ Game.buyBuildings = function(whichBuilding) {
     {
         Game.words -= Game.buildings[whichBuilding].price;
         Game.buildings[whichBuilding].howMany++;
-        Game.recalculateWps();
+        Game.recalculate();
     }
 }
 
@@ -105,8 +128,14 @@ Game.Logic = function() {
     Game.wordsd = Math.round(Game.words);
 }
 
-// draw the lone image
+// draw everything!  mostly a wrapper function
 Game.Draw = function() {
+    Game.drawPic();
+    Game.drawBuildings();
+}
+
+// draw the lone image
+Game.drawPic = function() {
     Game.leftCanvas = document.getElementById("leftCanvas").getContext('2d');
     var img = new Image();
     img.onload = function()
@@ -118,16 +147,26 @@ Game.Draw = function() {
     img.height = leftCanvas.height;
 }
 
+// how about it draws the functions
+Game.drawBuildings = function() {
+    for(b in Game.buildings)
+    {
+        var spn = document.getElementById("b" + b);
+        spn.innerHTML = " Price: " + fix(Game.buildings[b].price) + " words";
+    }
+}
+
 // everything that happens every frame
 Game.Loop = function () {
     var meh = document.getElementById("words");
 	meh.innerHTML = Game.wordsd + " words";
     var wps = document.getElementById("wordsps");
-    wps.innerHTML = Math.round(10*Game.wps)/10.0 + " words per second";
+    wps.innerHTML = fix(10*Game.wps)/10.0 + " words per second";
     for(b in Game.buildings)
     {
         var currDiv = document.getElementById(b+"stats");
-        currDiv.innerHTML = "You have " + Game.buildings[b].howMany + " of building " + b;
+        var temp = Math.round(b)+1;
+        currDiv.innerHTML = "You have " + Game.buildings[b].howMany + " of building " + temp;
     }
 
     Game.catchuplogic = 0;
