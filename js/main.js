@@ -6,7 +6,7 @@ var fix = function(num)
     if(num > 1000000)
     {
         var numdigits = Math.floor(Math.log(num) / Math.log(10));
-        var numgroupsofthree = numdigits % 3;
+        var numgroupsofthree = numdigits / 3;
         numdigits -= numgroupsofthree;
         switch (numgroupsofthree)
         {
@@ -130,6 +130,15 @@ Game.loadSave = function(file) {
     }
     Game.playerName = splitfile[2].toString();
     Game.recalculate();
+}
+
+// reset the game!
+Game.reset = function(var kind)
+{
+    if(kind)
+    {
+        Game.loadSave("0|0,0,||");
+    }
 }
 
 // add things when you click!
