@@ -1,6 +1,36 @@
 // beautify a number
 var fix = function(num)
 {
+    // first of all, is it > 1,000,000?
+
+    if(num > 1000000)
+    {
+        var numdigits = Math.floor(Math.log(num) / Math.log(10));
+        var numgroupsofthree = numdigits % 3;
+        numdigits -= numgroupsofthree;
+        switch (numgroupsofthree)
+        {
+        case 2:
+            var postfix = "Million";
+            break;
+        case 3:
+            var postfix = "Billion";
+            break;
+        case 4:
+            var postfix = "Trillion";
+            break;
+        case 5:
+            var postfix = "Quadrillion";
+            break;
+        case 6:
+            var postfix = "Quintillion";
+            break;
+        default:
+            var postfix = "...  A lot";
+        }
+        return (num / Math.pow(10, numdigits)) + " " + postfix;
+    }
+
     return Math.round(num);
 }
 
@@ -11,7 +41,7 @@ var Building = function(bprice,wpsgain,howmany,called){
     this.price=bprice;
     this.wpsgain=wpsgain;
     this.howMany=howmany;
-    this.called = called;
+    this.called=called;
 
     /*this.tooltip = function(){
         return '<div>Name: ' + this.called + ' </div>' + '<div>Amount: ' + this.howMany + '</div'
@@ -46,15 +76,29 @@ Game.Launch = function() {
     Game.buildings.push(new Building(10,0.1));
     Game.buildings.push(new Building(10000,500));
 
-    Game.playerName = prompt("Name: ");
-    document.getElementById("greeting").innerHTML = "Hello, " + Game.playerName + "!";
     //Game.tooltip(Game.buildings[0].tooltip());
     if (localStorage.getItem("game"))
     {
         Game.loadSave(localStorage.getItem("game"));
     }
+
+    if(!Game.playerName){Game.newName();}
+    document.getElementById("greeting").innerHTML = "Hello " + Game.playerName + "!";
+    
 }
 
+// import the save file as text
+Game.importSave = function() {
+    var sve = prompt("Paste save here!");
+    Game.loadSave(sve);
+}
+
+// the onclick function for the name
+Game.newName = function() {
+    Game.playerName = prompt("What's your name?");
+    document.getElementById("greeting").innerHTML = "Hello " + Game.playerName + "!";
+
+}
 
 // save the game, maybe?
 Game.Save = function() {
@@ -65,6 +109,8 @@ Game.Save = function() {
         str += Game.buildings[b].howMany + ',';
     }
     str += '|';
+    str += Game.playerName;
+    str += '|';
     localStorage.setItem("game", str);
     var middle = document.getElementById("middlepanel");
     middle.innerHTML = "Game Saved";
@@ -73,6 +119,7 @@ Game.Save = function() {
     setTimeout(Game.clearMiddle, 1500);
 }
 
+// load the save, maybe?
 Game.loadSave = function(file) {
     splitfile = file.split('|');
     Game.words = parseInt(splitfile[0]);
@@ -81,6 +128,7 @@ Game.loadSave = function(file) {
     {
         Game.buildings[i].howMany = buildingCount[i];
     }
+    Game.playerName = splitfile[2].toString();
     Game.recalculate();
 }
 
@@ -93,6 +141,25 @@ Game.click = function() {
 Game.recalculate = function(){
     Game.recalculatePrice();
     Game.recalculateWps();
+    Game.checkBuildings();
+}
+
+// have any buildings become affordable?
+// have any buildings become expensive?
+Game.checkBuildings = function(){
+    for(b in Game.buildings)
+    {
+        if(Game.words <= Game.buildings[b].price)
+        {
+            var temp = document.getElementById("button"+b);
+            temp.className = "grayed";
+        }
+        else if(Game.words > Game.buildings[b].price)
+        {
+            var temp = document.getElementById("button"+b);
+            temp.className = "notgrayed";
+        }
+    }
 }
 
 // when you buy a building, cost increases
@@ -126,6 +193,7 @@ Game.buyBuildings = function(whichBuilding) {
 Game.Logic = function() {
     Game.words += Game.wps/Game.fps;
     Game.wordsd = Math.round(Game.words);
+    Game.recalculate();
 }
 
 // draw everything!  mostly a wrapper function

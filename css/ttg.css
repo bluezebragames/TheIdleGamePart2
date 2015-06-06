@@ -9,6 +9,11 @@ body {
 	user-select: none;
 }
 
+#topbar{
+	/*position: absolute;*/
+	left: 0px;
+}
+
 #game{
 	position: absolute;
 	left: 0px;
@@ -52,4 +57,17 @@ body {
 	right: 0px;
 	overflow-x: hidden;
 	overflow-y: scroll;
+}
+
+#greeting{
+	cursor: pointer;
+}
+
+.grayed{
+	background-color: #666;
+}
+
+.notgrayed{
+	background-color: #fff;
+	cursor: pointer;
 }
