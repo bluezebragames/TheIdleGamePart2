@@ -133,7 +133,7 @@ Game.loadSave = function(file) {
 }
 
 // reset the game!
-Game.reset = function(var kind)
+Game.reset = function(kind)
 {
     if(kind)
     {
