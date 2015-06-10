@@ -87,6 +87,8 @@ Game.Launch = function() {
     Game.buildings.push(new Building(100,1,0,"B2"));
     Game.buildings.push(new Building(10000,500,0,"B3"));
     Game.buildBuildings();
+    Game.wantTutorial = confirm("Do you want tutorials?");
+    Game.tutorialLevel = 0;
 
     //Game.tooltip(Game.buildings[0].tooltip());
     if (localStorage.getItem("game"))
@@ -117,6 +119,8 @@ Game.buildBuildings = function() {
         var rightpanel = document.getElementById("rightpanel");
         rightpanel.appendChild(div);
     }
+    var hr = document.createElement("hr");
+    rightpanel.appendChild(hr);
 }
 
 /*
@@ -152,14 +156,16 @@ Game.Save = function() {
     str += '|';
     str += Game.playerName;
     str += '|';
+    str += Game.tutorialLevel;
+    str += '|';
     localStorage.setItem("game", str);
-    var middle = document.getElementById("middlepanel");
-    middle.innerHTML = "Game Saved";
-
-    return str;
+    var save = document.getElementById("save");
+    save.innerHTML += "Game Saved";
 
     setTimeout(Game.Save, 10000);
     setTimeout(Game.clearMiddle, 1500);
+
+    return str;
 }
 
 // load the save, maybe?
@@ -172,6 +178,7 @@ Game.loadSave = function(file) {
         Game.buildings[i].howMany = buildingCount[i];
     }
     Game.playerName = splitfile[2].toString();
+    Game.tutorialLevel = parseInt(splitfile[3]);
     Game.recalculate();
 }
 
@@ -184,13 +191,202 @@ Game.reset = function(kind)
 {
     if(kind)
     {
-        Game.loadSave("0|0,0,0,||");
+        Game.loadSave("0|0,0,0,||0");
+        Game.wordsAllTime = 0;
     }
 }
 
 /*
+    GAME TUTORIAL!
+*/
+
+Game.checkTutorial = function() {
+    if(Game.wantTutorial)
+    {
+        // do tutorial stuff, I'd say
+        Game.middiv = document.getElementById("middiv");
+        Game.middiv2 = document.getElementById("middiv2");
+        switch(Game.tutorialLevel)
+        {
+        case 0:
+            if(Game.wordsAllTime == 0)
+            {
+                // first tutorial!  get psyched!
+                Game.tutorialText = "Ptro: Hey kid!<br>";
+                Game.displaySlowText();
+                Game.tutorialLevel++;
+            }
+            break;
+        case 2:
+            Game.tutorialText = "Ptro: I'm The Ptrocanfer, but you may call me The Ptrocanfer for short.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 4:
+            Game.tutorialText = "Ptro: I see you're playing this game, and while I must commend you for it,<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 6:
+            Game.tutorialText = "Ptro: I really was wondering if you had anything more important to do with your life.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 8:
+            Game.tutorialText = "Ptro: Anyway, to start this game off you'd probably be best clicking on that white space off to the left a few times.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 10:
+            Game.tutorialText = "Ptro: Maybe...  15.  How's 15 sound?<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 12:
+            if(Game.wordsAllTime >= 15)
+            {
+                Game.tutorialText = "Ptro: Wow!  You actually did it!<br>";
+                setTimeout(Game.displaySlowText, 5000);
+                Game.tutorialLevel++;
+            }
+            break;
+        case 14:
+            Game.tutorialText = "Ptro: I really didn't think you were cabable of that.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 16:
+            Game.tutorialText = "Ptro: Oh, who am I kidding.  I knew you could do it.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 18:
+            Game.tutorialText = "Ptro: Anyway, that randomly chosen number 15 allows you to buy a 'B1.'<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 20:
+            Game.tutorialText = "Ptro: Head off to the right panel over there and pick one up.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 22:
+            if(Game.buildings[0].howMany >= 1)
+            {
+                Game.tutorialText = "Ptro: You see, now your 'words per second,' back on the left panel, is positive.<br>";
+                setTimeout(Game.displaySlowText, 5000);
+                Game.tutorialLevel++;
+            }
+            break;
+        case 24:
+            Game.tutorialText = "Ptro: This particular positive thing is good because it gives you words over time.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 26:
+            Game.tutorialText = "Ptro: Weirdly enough, if you switch to another tab, you'll still get words, but more slowly.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 28:
+            Game.tutorialText = "Ptro: So increasing your wps (acronyms ftw b/c I'm a maverick) is pretty nice.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 30:
+            Game.tutorialText = "Ptro: Get to 17 words and buy another 'B1.'<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 32:
+            if(Game.buildings[0].howMany >= 2)
+            {
+                Game.tutorialText = "Ptro: Cool beans!  It's almost as if those beans were significantly colder than usual.<br>";
+                setTimeout(Game.displaySlowText, 5000);
+                Game.tutorialLevel++;
+            }
+            break;
+        case 34:
+            Game.tutorialText = "Ptro: I'm really feeling the number five today.  How about five 'B1's.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 36:
+            if(Game.buildings[0].howMany >= 5)
+            {
+                Game.tutorialText = "Ptro: Maybe now it's time to try getting a 'B2.'<br>";
+                setTimeout(Game.displaySlowText, 5000);
+                Game.tutorialLevel++;
+            }
+            break;
+        case 38:
+            Game.tutorialText = "Ptro: Get 100 words and you can afford one.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 40:
+            if(Game.buildings[1].howMany >= 1)
+            {
+                Game.tutorialText = "Ptro: Watch out, we've got a pro on our hands...<br>";
+                setTimeout(Game.displaySlowText, 5000);
+                Game.tutorialLevel++;
+            }
+            break;
+        case 42:
+            Game.tutorialText = "Ptro: Or should I say Ptro!<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        case 44:
+            Game.tutorialText = "Ptro: Just kidding, but close enough.<br>";
+            setTimeout(Game.displaySlowText, 5000);
+            Game.tutorialLevel++;
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+Game.displaySlowText = function()
+{
+    Game.middiv.innerHTML = Game.middiv2.innerHTML;
+    Game.middiv2.innerHTML = Game.tutorialText;
+    Game.tutorialLevel++;
+}
+
+/*
+    UPGRADES!
+//
+
+Game.checkUpgrades = function() {
+    var upgradelist = [100,10,5];
+    for(u in upgradelist)
+    {
+        for(b in Game.buildings)
+        {
+            if(Game.buildings[b].howMany >= upgradelist[u])
+            {
+                Game.unlockUpgrade(3*b+u);
+            }
+        }
+    }
+}
+
+Game.unlockUpgrade = function() {
+
+}*/
+
+/*
     GAME LOGIC!
 */
+
+Game.checkEverything = function() {
+    Game.checkBuildings();
+    Game.checkTutorial(); // WORKING ON RIGHT NOW!
+    //Game.checkUpgrades(); // DON'T EVEN TRY THIS
+    //Game.checkAchievements(); // NOT DONE
+}
 
 // add things when you click!
 Game.click = function() {
@@ -201,7 +397,6 @@ Game.click = function() {
 Game.recalculate = function(){
     Game.recalculatePrice();
     Game.recalculateWps();
-    Game.checkBuildings();
 }
 
 // have any buildings become affordable?
@@ -252,8 +447,10 @@ Game.buyBuildings = function(whichBuilding) {
 // get words from idling
 Game.Logic = function() {
     Game.words += Game.wps/Game.fps;
+    Game.wordsAllTime += Game.wps/Game.fps;
     Game.wordsd = fix(Game.words);
     Game.recalculate();
+    document.title = Game.wordsd;
 }
 
 /*
@@ -293,11 +490,10 @@ Game.drawBuildings = function() {
     }
 }
 
-// clear the middle because it was overwritten by "game saved"
+// remove the "game saved" from the middle panel
 Game.clearMiddle = function() {
-    var middle = document.getElementById("middlepanel");
-    middle.innerHTML = "Middle";
-    //alert("ao8ueroi");
+    var save = document.getElementById("save");
+    save.innerHTML = "";
 }
 
 /*
@@ -319,6 +515,8 @@ Game.Loop = function () {
     Game.catchuplogic = 0;
     Game.Logic();
     Game.Draw();
+    Game.checkEverything();
+
 
     setTimeout(Game.Loop, 1000/Game.fps);
 }
