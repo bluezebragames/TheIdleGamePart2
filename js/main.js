@@ -154,10 +154,10 @@ Game.Save = function() {
         str += Game.buildings[b].howMany + ',';
     }
     str += '|';
-    str += Game.playerName;
+    str += Game.playerName + '|';
+    str += parseInt(Game.tutorialLevel - Game.tutorialLevel % 2); // because you need it to be even
     str += '|';
-    str += Game.tutorialLevel;
-    str += '|';
+    str += parseInt(Game.wordsAllTime) + '|';
     localStorage.setItem("game", str);
     var save = document.getElementById("save");
     save.innerHTML += "Game Saved";
@@ -179,6 +179,7 @@ Game.loadSave = function(file) {
     }
     Game.playerName = splitfile[2].toString();
     Game.tutorialLevel = parseInt(splitfile[3]);
+    Game.wordsAllTime = parseInt(splitfile[4]);
     Game.recalculate();
 }
 
@@ -191,7 +192,7 @@ Game.reset = function(kind)
 {
     if(kind)
     {
-        Game.loadSave("0|0,0,0,||0");
+        Game.loadSave("0|0,0,0,|0|0|");
         Game.wordsAllTime = 0;
     }
 }
@@ -314,17 +315,25 @@ Game.checkTutorial = function() {
         case 36:
             if(Game.buildings[0].howMany >= 5)
             {
-                Game.tutorialText = "Ptro: Maybe now it's time to try getting a 'B2.'<br>";
+                Game.tutorialText = "Ptro: Actually no, make that 6 'B1's.<br>";
                 setTimeout(Game.displaySlowText, 5000);
                 Game.tutorialLevel++;
             }
             break;
         case 38:
+            if(Game.buildings[0].howMany >= 6)
+            {
+                Game.tutorialText = "Ptro: Congrats kid!  Maybe now it's time to try getting a 'B2.'<br>";
+                setTimeout(Game.displaySlowText, 5000);
+                Game.tutorialLevel++;
+            }
+            break;
+        case 40:
             Game.tutorialText = "Ptro: Get 100 words and you can afford one.<br>";
             setTimeout(Game.displaySlowText, 5000);
             Game.tutorialLevel++;
             break;
-        case 40:
+        case 42:
             if(Game.buildings[1].howMany >= 1)
             {
                 Game.tutorialText = "Ptro: Watch out, we've got a pro on our hands...<br>";
@@ -332,12 +341,12 @@ Game.checkTutorial = function() {
                 Game.tutorialLevel++;
             }
             break;
-        case 42:
+        case 44:
             Game.tutorialText = "Ptro: Or should I say Ptro!<br>";
             setTimeout(Game.displaySlowText, 5000);
             Game.tutorialLevel++;
             break;
-        case 44:
+        case 46:
             Game.tutorialText = "Ptro: Just kidding, but close enough.<br>";
             setTimeout(Game.displaySlowText, 5000);
             Game.tutorialLevel++;
