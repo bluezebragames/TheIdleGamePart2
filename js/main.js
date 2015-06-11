@@ -155,7 +155,7 @@ Game.Save = function() {
     }
     str += '|';
     str += Game.playerName + '|';
-    str += parseInt(Game.tutorialLevel - Game.tutorialLevel % 2); // because you need it to be even
+    str += parseInt(Game.tutorialLevel - Game.tutorialLevel % 2 - 4); // because you need it to be even, and to have the two previous tutorials display on refresh
     str += '|';
     str += parseInt(Game.wordsAllTime) + '|';
     localStorage.setItem("game", str);
@@ -229,7 +229,7 @@ Game.checkTutorial = function() {
             Game.tutorialLevel++;
             break;
         case 6:
-            Game.tutorialText = "Ptro: I really was wondering if you had anything more important to do with your life.<br>";
+            Game.tutorialText = "Ptro: I'm really wondering if you had anything more important to do with your life.<br>";
             setTimeout(Game.displaySlowText, 5000);
             Game.tutorialLevel++;
             break;
@@ -295,27 +295,27 @@ Game.checkTutorial = function() {
             Game.tutorialLevel++;
             break;
         case 30:
-            Game.tutorialText = "Ptro: Get to 17 words and buy another 'B1.'<br>";
+            Game.tutorialText = "Ptro: Get to 17 words and buy another '" + Game.buildings[0].called + "'.<br>";
             setTimeout(Game.displaySlowText, 5000);
             Game.tutorialLevel++;
             break;
         case 32:
             if(Game.buildings[0].howMany >= 2)
             {
-                Game.tutorialText = "Ptro: Cool beans!  It's almost as if those beans were significantly colder than usual.<br>";
+                Game.tutorialText = "Ptro: Cool beans!  It's almost as if those beans are significantly colder than usual.<br>";
                 setTimeout(Game.displaySlowText, 5000);
                 Game.tutorialLevel++;
             }
             break;
         case 34:
-            Game.tutorialText = "Ptro: I'm really feeling the number five today.  How about five 'B1's.<br>";
+            Game.tutorialText = "Ptro: I'm really feeling the number five today.  How about five '" + Game.buildings[0].called + "'s.<br>";
             setTimeout(Game.displaySlowText, 5000);
             Game.tutorialLevel++;
             break;
         case 36:
             if(Game.buildings[0].howMany >= 5)
             {
-                Game.tutorialText = "Ptro: Actually no, make that 6 'B1's.<br>";
+                Game.tutorialText = "Ptro: Actually no, make that 6 '" + Game.buildings[0].called + "'s.<br>";
                 setTimeout(Game.displaySlowText, 5000);
                 Game.tutorialLevel++;
             }
@@ -323,7 +323,7 @@ Game.checkTutorial = function() {
         case 38:
             if(Game.buildings[0].howMany >= 6)
             {
-                Game.tutorialText = "Ptro: Congrats kid!  Maybe now it's time to try getting a 'B2.'<br>";
+                Game.tutorialText = "Ptro: Congrats kid!  Maybe now it's time to try getting a '" + Game.buildings[1].called + ".'<br>";
                 setTimeout(Game.displaySlowText, 5000);
                 Game.tutorialLevel++;
             }
@@ -470,6 +470,7 @@ Game.Logic = function() {
 Game.Draw = function() {
     Game.drawPic();
     Game.drawBuildings();
+    Game.drawStats();
 }
 
 // draw the lone image
@@ -478,9 +479,10 @@ Game.drawPic = function() {
     var img = new Image();
     img.onload = function()
     {
+        document.getElementById("leftCanvas").style.backgroundColor = "white";
         Game.leftCanvas.drawImage(img,0,0);
     }
-    img.src = "img/cover.png";
+    img.src = "img/paper.png";
     img.width = leftCanvas.width;
     img.height = leftCanvas.height;
 }
@@ -489,13 +491,43 @@ Game.drawPic = function() {
 Game.drawBuildings = function() {
     for(b in Game.buildings)
     {
-        // inside the button
-        var spn = document.getElementById("bname" + b);
-        spn.innerHTML = Game.buildings[b].called;
+        if(Game.wordsAllTime >= Game.buildings[b].bprice)
+        {
+            var div = document.getElementById(b);
+            div.style.visibility = "visible";
+            // inside the button
+            var spn = document.getElementById("bname" + b);
+            spn.innerHTML = Game.buildings[b].called;
+            // outside the button
+            var spn = document.getElementById("b" + b);
+            spn.innerHTML = " Price: " + fix(Game.buildings[b].price) + " words";
+        }
+        else if(b == 0 || Game.wordsAllTime >= Game.buildings[b-1].bprice)
+        {
+            var div = document.getElementById(b);
+            div.style.visibility = "visible";
+            // inside the button
+            var spn = document.getElementById("bname" + b);
+            spn.innerHTML = "???";
+            // outside the button
+            var spn = document.getElementById("b" + b);
+            spn.innerHTML = " Price: " + fix(Game.buildings[b].price) + " words";
+        }
+        else
+        {
+            var div = document.getElementById(b);
+            div.style.visibility = "hidden";
+        }
+    }
+}
 
-        // outside the button
-        var spn = document.getElementById("b" + b);
-        spn.innerHTML = " Price: " + fix(Game.buildings[b].price) + " words";
+// draws the statistics of how many buildings you have in the left panel
+Game.drawStats = function() {
+    for(b in Game.buildings)
+    {
+        var currDiv = document.getElementById(b+"stats");
+        if(Game.buildings[b].howMany != 0){currDiv.innerHTML = "You have " + Game.buildings[b].howMany + " " + Game.buildings[b].called + (Game.buildings[b].howMany == 1 ? "" : "s");}
+        else{currDiv.innerHTML = "";}
     }
 }
 
@@ -515,11 +547,7 @@ Game.Loop = function () {
 	meh.innerHTML = Game.wordsd + " words";
     var wps = document.getElementById("wordsps");
     wps.innerHTML = fix(10*Game.wps)/10.0 + " words per second";
-    for(b in Game.buildings)
-    {
-        var currDiv = document.getElementById(b+"stats");
-        currDiv.innerHTML = "You have " + Game.buildings[b].howMany + " " + Game.buildings[b].called + (Game.buildings[b].howMany == 1 ? "" : "s");
-    }
+    
 
     Game.catchuplogic = 0;
     Game.Logic();
